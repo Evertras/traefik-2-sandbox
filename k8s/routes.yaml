@@ -1,0 +1,53 @@
+---
+# Dashboard
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: dashboard
+  namespace: traefik-sandbox
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`traefik.localhost`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+      kind: Rule
+      services:
+        - name: api@internal
+          kind: TraefikService
+---
+# Echo service
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: echo
+  namespace: traefik-sandbox
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`echo.localhost`)
+      kind: Rule
+      services:
+        - name: echo
+          namespace: traefik-sandbox
+          kind: Service
+          port: 8000
+---
+# API service
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: api
+  namespace: traefik-sandbox
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`api.localhost`)
+      kind: Rule
+      services:
+        - name: api
+          namespace: traefik-sandbox
+          kind: Service
+          port: 8000
+

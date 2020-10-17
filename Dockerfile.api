@@ -1,0 +1,15 @@
+FROM golang:1.15 AS builder
+
+WORKDIR /workspace
+COPY go.* /workspace/
+RUN go mod download
+
+COPY . /workspace/
+RUN make bin/api-server
+
+FROM scratch
+
+COPY --from=builder /workspace/bin/api-server ./api-server
+
+ENTRYPOINT ["/api-server"]
+
